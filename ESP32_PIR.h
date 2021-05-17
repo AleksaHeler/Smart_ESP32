@@ -1,11 +1,23 @@
-
+/* 
+*  Interfacing passive infrared (PIR) motion sensor using one digital read pin (active/unactive)
+*/
 #ifdef ENABLE_PIR
 
+
+//// Function declarations /////////////////////////////////////////////////////////
+void read_pir();
+void pir_format_mqtt_message();
+
+
+//// Variables /////////////////////////////////////////////////////////////////////
 int pir_active = 0;
 
+
+//// Functions /////////////////////////////////////////////////////////////////////
 void read_pir(){
     pir_active = digitalRead(pirSensorPin);
 }
+
 
 void pir_format_mqtt_message(char* message, char* topic){
     char value[64];                                 // Value used for string conversion

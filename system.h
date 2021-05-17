@@ -1,18 +1,37 @@
+/* 
+*  Hardware specific settings: initializing pins.
+*  Helper functions for float->string conversions
+*/
 
+//// Function declarations /////////////////////////////////////////////////////////
+void initialize_pins();
+void reverse(char* str, int len);                   // Reverses a string 'str' of length 'len'
+int intToStr(int x, char str[], int d);             // Converts a given integer x to string str[]
+void ftoa(float n, char* res, int afterpoint);      // Converts a floating-point/double number to a string
+
+
+//// Variables /////////////////////////////////////////////////////////////////////
 #ifdef ENABLE_PIR
 const int pirSensorPin = 18;
 #endif
+#ifdef ENABLE_LIGHT
+const int lightSensorPin = 34; // 35 is also safe
+#endif
 
 /*const int analogTempPin1 = 25;
-const int analogTempPin = 5;
-const int lightSensorPin = 13;*/
+const int analogTempPin = 5;*/
 
 
+//// Functions /////////////////////////////////////////////////////////////////////
 void initialize_pins(){
     #ifdef ENABLE_PIR
     pinMode(pirSensorPin, INPUT);
     #endif
+    #ifdef ENABLE_LIGHT
+    pinMode(lightSensorPin, INPUT);
+    #endif
 }
+
 
 // Reverses a string 'str' of length 'len'
 void reverse(char* str, int len)
@@ -26,6 +45,7 @@ void reverse(char* str, int len)
         j--;
     }
 }
+
   
 // Converts a given integer x to string str[]. 
 // d is the number of digits required in the output. 
@@ -48,6 +68,7 @@ int intToStr(int x, char str[], int d)
     str[i] = '\0';
     return i;
 }
+
 
 // Converts a floating-point/double number to a string.
 void ftoa(float n, char* res, int afterpoint)

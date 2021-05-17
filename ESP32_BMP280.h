@@ -1,17 +1,20 @@
 /* 
 *  Interfacing BMP280 temperature and barometric pressure sensor using I2C 
-*  Functions: initialize BMP280, read values
 */
-
 #ifdef ENABLE_BMP280
+
 
 #include <Wire.h>
 #include <Adafruit_BMP280.h>
 #include <Adafruit_Sensor.h>
 
+
+//// Function declarations /////////////////////////////////////////////////////////
 void initialize_BMP280();
 void read_BMP280();
 
+
+//// Variables /////////////////////////////////////////////////////////////////////
 Adafruit_BMP280 bmp;
 const unsigned int bmp_address = 0x76;  // I2C address
 
@@ -19,6 +22,8 @@ float bmp280_temperature = 0;   // Celsius
 float bmp280_pressure = 0;      // mBar
 float bmp280_altitude = 0;      // meters
 
+
+//// Functions /////////////////////////////////////////////////////////////////////
 // Initializes temp/pressure sensor, and if that fails, loops continuously
 void initialize_BMP280(){
     if (!bmp.begin(bmp_address, BMP280_CHIPID)) {
@@ -33,11 +38,13 @@ void initialize_BMP280(){
                     Adafruit_BMP280::STANDBY_MS_500); // Standby time
 }
 
+
 void read_BMP280(){
     bmp280_temperature = bmp.readTemperature();
     bmp280_pressure = bmp.readPressure()/100.0; // Convert from pascals to mBar
     bmp280_altitude = bmp.readAltitude(1013.25);
 }
+
 
 void bmp280_format_mqtt_message(char* message, char* topic){
     char value[64];                                 // Value used for float->string conversion
@@ -61,5 +68,6 @@ void bmp280_format_mqtt_message(char* message, char* topic){
     ftoa(bmp280_altitude, value, 2);
     strcat(message, value);
 }
+
 
 #endif // ENABLE_BMP280

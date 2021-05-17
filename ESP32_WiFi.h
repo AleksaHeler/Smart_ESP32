@@ -2,14 +2,16 @@
 *  WiFi and MQTT specific code 
 *  Functions: initialize wifi, initialize mqtt, handle wifi, mqtt publish, mqtt callback, wifi reconnect
 */
-
 #ifdef ENABLE_WIFI
+
 
 #include <WiFi.h>
 #include <PubSubClient.h>
 
 #include "credentials.h"
 
+
+//// Function declarations /////////////////////////////////////////////////////////
 void initialize_wifi();
 void intialize_mqtt();
 void mqtt_publish();
@@ -17,13 +19,14 @@ void handle_wifi();
 void callback(char*, byte*, unsigned int);
 void reconnect();
 
-// MQTT Broker IP address
-const char* mqtt_server = "192.168.0.200";
 
+//// Variables /////////////////////////////////////////////////////////////////////
+const char* mqtt_server = "192.168.0.200";      // MQTT Broker IP address
 WiFiClient espClient;
 PubSubClient client(espClient);
 
 
+//// Functions /////////////////////////////////////////////////////////////////////
 // Connect to given WiFi network
 void initialize_wifi() {
     delay(10);
@@ -33,7 +36,7 @@ void initialize_wifi() {
         delay(500);
         Serial.print(".");
     }
-    Serial.printf("\nWiFi connected! [%s]\n", WiFi.localIP());
+    Serial.printf("\nWiFi connected!");
 }
 
 
@@ -41,6 +44,7 @@ void intialize_mqtt(){
     client.setServer(mqtt_server, 1883);
     client.setCallback(callback);
 }
+
 
 void mqtt_publish(){
     char message[512];                              // Buffer used to publish 
@@ -57,7 +61,14 @@ void mqtt_publish(){
     Serial.printf("MQTT publish: [%s] {%s}\n", topic, message);
     client.publish(topic, message);
     #endif
+
+    #ifdef ENABLE_LIGHT
+    light_format_mqtt_message(message, topic);
+    Serial.printf("MQTT publish: [%s] {%s}\n", topic, message);
+    client.publish(topic, message);
+    #endif
 }
+
 
 void handle_wifi(){
     if (!client.connected())
@@ -65,9 +76,11 @@ void handle_wifi(){
     client.loop();
 }
 
+
 void callback(char* topic, byte* message, unsigned int length) {
     Serial.printf("MQTT callback: [%s] {%s}\n", topic, message);
 }
+
 
 void reconnect() {
     while (!client.connected()) {                               // MQTT callback
@@ -81,5 +94,6 @@ void reconnect() {
         }
     }
 }
+
 
 #endif // ENABLE_WIFI
