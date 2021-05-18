@@ -11,6 +11,8 @@ void ftoa(float n, char* res, int afterpoint);      // Converts a floating-point
 
 
 //// Variables /////////////////////////////////////////////////////////////////////
+unsigned long time_now = 0;         // Used for non-blocking delay
+unsigned long time_previous = 0;
 #ifdef ENABLE_PIR
 const int pirSensorPin = 18;
 #endif
@@ -30,6 +32,9 @@ void initialize_pins(){
     #ifdef ENABLE_LIGHT
     pinMode(lightSensorPin, INPUT);
     #endif
+
+    time_now = millis();
+    time_previous = time_now;
 }
 
 

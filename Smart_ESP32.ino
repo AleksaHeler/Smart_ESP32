@@ -8,12 +8,13 @@
 
 //// Defines ////////////////////////////////////////////////////////////////////
 #define ENABLE_WIFI
-#define ENABLE_BMP280
-#define ENABLE_PIR
-#define ENABLE_LIGHT
+#define ENABLE_OTA          // Over-the-air code update
+#define ENABLE_BMP280       // Temperature and pressure sensor
+#define ENABLE_PIR          // Passive infrared sensor
+#define ENABLE_LIGHT        // Resistive light intensity sensor
 
 #define DEVICE_NAME "ESP32"
-#define PUBLISH_INTERVAL 60   // seconds
+#define PUBLISH_INTERVAL 10 // seconds
 
 
 //// Local header files /////////////////////////////////////////////////////////
@@ -41,10 +42,19 @@ void setup() {
 }
 
 void loop() {
-    delay(PUBLISH_INTERVAL * 1000); // TODO: make non blocking delay (if time passed > required...)
+    time_now = millis();
 
-    #ifdef ENABLE_WIFI
-    handle_wifi();
-    mqtt_publish();
+    // Non-blocking delay
+    if (time_now - time_previous >= PUBLISH_INTERVAL*1000) {
+        time_previous = time_now;
+
+        #ifdef ENABLE_WIFI
+        handle_wifi();
+        mqtt_publish();
+        #endif
+    }
+    
+    #if defined ENABLE_WIFI && defined ENABLE_OTA
+    ArduinoOTA.handle();
     #endif
 }

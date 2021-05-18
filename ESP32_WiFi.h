@@ -7,6 +7,7 @@
 
 #include <WiFi.h>
 #include <PubSubClient.h>
+#include <ArduinoOTA.h>
 
 #include "credentials.h"
 
@@ -37,6 +38,43 @@ void initialize_wifi() {
         Serial.print(".");
     }
     Serial.printf("\nWiFi connected!");
+
+    #ifdef ENABLE_OTA
+    ArduinoOTA.setHostname(otaHostname);
+    ArduinoOTA.setPassword(otaPassword);
+
+    ArduinoOTA.onStart([]() {
+        String type;
+        if (ArduinoOTA.getCommand() == U_FLASH) {
+            type = "sketch";
+        } else { // U_FS
+            type = "filesystem";
+        }
+        // NOTE: if updating FS this would be the place to unmount FS using FS.end()
+        Serial.println("Start updating " + type);
+    });
+    ArduinoOTA.onEnd([]() {
+        Serial.println("\nEnd");
+    });
+    ArduinoOTA.onProgress([](unsigned int progress, unsigned int total) {
+        Serial.printf("Progress: %u%%\r", (progress / (total / 100)));
+    });
+    ArduinoOTA.onError([](ota_error_t error) {
+        Serial.printf("Error[%u]: ", error);
+        if (error == OTA_AUTH_ERROR) {
+            Serial.println("Auth Failed");
+        } else if (error == OTA_BEGIN_ERROR) {
+            Serial.println("Begin Failed");
+        } else if (error == OTA_CONNECT_ERROR) {
+            Serial.println("Connect Failed");
+        } else if (error == OTA_RECEIVE_ERROR) {
+            Serial.println("Receive Failed");
+        } else if (error == OTA_END_ERROR) {
+            Serial.println("End Failed");
+        }
+    });
+    ArduinoOTA.begin();
+    #endif
 }
 
 
@@ -52,19 +90,19 @@ void mqtt_publish(){
 
     #ifdef ENABLE_BMP280
     bmp280_format_mqtt_message(message, topic);                     // Formating is done inside sensor header file
-    Serial.printf("MQTT publish: [%s] {%s}\n", topic, message);     // Debug
+    //Serial.printf("MQTT publish: [%s] {%s}\n", topic, message);   // Debug
     client.publish(topic, message);                                 // Publish
     #endif
 
     #ifdef ENABLE_PIR
     pir_format_mqtt_message(message, topic);
-    Serial.printf("MQTT publish: [%s] {%s}\n", topic, message);
+    //Serial.printf("MQTT publish: [%s] {%s}\n", topic, message);
     client.publish(topic, message);
     #endif
 
     #ifdef ENABLE_LIGHT
     light_format_mqtt_message(message, topic);
-    Serial.printf("MQTT publish: [%s] {%s}\n", topic, message);
+    //Serial.printf("MQTT publish: [%s] {%s}\n", topic, message);
     client.publish(topic, message);
     #endif
 }
@@ -78,7 +116,8 @@ void handle_wifi(){
 
 
 void callback(char* topic, byte* message, unsigned int length) {
-    Serial.printf("MQTT callback: [%s] {%s}\n", topic, message);
+    message[length] = '\0';
+    Serial.printf("MQTT [%s] {%s}\n", topic, message);
 }
 
 
@@ -87,7 +126,7 @@ void reconnect() {
         Serial.print("Attempting MQTT connection...");
         if (client.connect("ESP8266Client")) {                  // Attempt to connect
             Serial.println("connected");
-            client.subscribe("ESP32/output");                   // Subscribe
+            client.subscribe("#");                              // Subscribe to all topics
         } else {
             Serial.printf("failed, rc=%d. Try again in 5 seconds\n", client.state());
             delay(5000);

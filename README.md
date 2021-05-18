@@ -9,4 +9,8 @@ Arduino IDE. Also add a file called ``` credentials.h ``` and paste this code (a
 // Replace the next variables with your WiFi SSID/Password combination
 const char* ssid = "your_SSID";
 const char* password = "your_password";
+
+// Over the air updates
+const char* otaHostname = "ESP32_Hostname";
+const char* otaPassword = "OTA_password";
 ```

@@ -23,7 +23,7 @@ void read_light(){
     for(int i = 0; i < MEASURE_COUNT; i++){
         sum += analogRead(lightSensorPin);
     }
-    light_amount = (4096.0 - (1.0 * sum / MEASURE_COUNT)))/4096.0;
+    light_amount = (4096.0 - (1.0 * (sum / MEASURE_COUNT)))/4096.0;
 }
 
 
