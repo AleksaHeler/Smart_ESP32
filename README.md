@@ -18,12 +18,12 @@ To have a build folder (faster builds when little has changed), you can add this
 ``` js
 "output": "build"
 ```
-If you would also like to use over-the-air (OTA) sketch updates, you need to add ``` UploadTool=esptool ``` to the line with ```"configuration": ... ``` inside ```./vscode/arduino.json```. Then the file ``` arduino.json ``` should look something like this:
+If you would also like to use over-the-air (OTA) sketch updates, you need to add ``` UploadTool=esptool ``` to the line with ```"configuration": ... ``` and also set port to IP address inside ```./vscode/arduino.json```. Then the file ``` arduino.json ``` should look something like this:
 ``` js
 {
     "configuration": "UploadTool=esptool,PSRAM=disabled,PartitionScheme=default,CPUFreq=240,FlashMode=qio,FlashFreq=80,FlashSize=4M,UploadSpeed=921600,DebugLevel=none",
     "board": "esp32:esp32:esp32",
-    "port": "COM3",
+    "port": "192.168.0.150",
     "sketch": "Smart_ESP32.ino",
     "output": "build"
 }
