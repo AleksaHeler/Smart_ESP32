@@ -6,6 +6,4 @@ credentials.h
 .vscode
 
 # Local build directory
-# In .vscode/arduino.json add line:
-#   "output": "build"
 build
