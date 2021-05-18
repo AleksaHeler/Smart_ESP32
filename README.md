@@ -4,7 +4,7 @@ An IoT oriented application of ESP32 microcontroller. This is a modular script (
 
 ## Prerequisites
 
-Arduino IDE. Also add a file called ``` credentials.h ``` and paste this code (and change data):
+Arduino IDE or Visual Studio Code (what I'm using). Also add a file called ``` credentials.h ``` and paste this code (and change data):
 ``` c
 // Replace the next variables with your WiFi SSID/Password combination
 const char* ssid = "your_SSID";
