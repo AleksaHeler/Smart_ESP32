@@ -15,7 +15,10 @@ int pir_active = 0;
 
 //// Functions /////////////////////////////////////////////////////////////////////
 void read_pir(){
+    digitalWrite(pirSensorPwrPin, HIGH);
+    delay(50);
     pir_active = digitalRead(pirSensorPin);
+    digitalWrite(pirSensorPwrPin, LOW);
 }
 
 

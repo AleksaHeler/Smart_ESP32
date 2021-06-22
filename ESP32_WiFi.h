@@ -105,6 +105,10 @@ void mqtt_publish(){
     //Serial.printf("MQTT publish: [%s] {%s}\n", topic, message);
     client.publish(topic, message);
     #endif
+
+    battery_format_mqtt_message(message, topic);
+    //Serial.printf("MQTT publish: [%s] {%s}\n", topic, message);
+    client.publish(topic, message);
 }
 
 

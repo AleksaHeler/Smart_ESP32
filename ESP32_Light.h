@@ -18,12 +18,15 @@ float light_amount = 0;
 
 //// Functions /////////////////////////////////////////////////////////////////////
 void read_light(){
+    digitalWrite(lightSensorPwrPin, HIGH);
+    delay(5);
     // Read multiple times and take average
     unsigned long sum = 0;
     for(int i = 0; i < MEASURE_COUNT; i++){
         sum += analogRead(lightSensorPin);
     }
     light_amount = (4096.0 - (1.0 * (sum / MEASURE_COUNT)))/4096.0;
+    digitalWrite(lightSensorPwrPin, LOW);
 }
 
 

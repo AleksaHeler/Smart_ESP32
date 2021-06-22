@@ -15,28 +15,55 @@ unsigned long time_now = 0;         // Used for non-blocking delay
 unsigned long time_previous = 0;
 #ifdef ENABLE_PIR
 const int pirSensorPin = 18;
+const int pirSensorPwrPin = 19;
 #endif
 #ifdef ENABLE_LIGHT
-const int lightSensorPin = 34; // 35 is also safe
+const int lightSensorPin = 34;
+const int lightSensorPwrPin = 26;
 #endif
-
-/*const int analogTempPin1 = 25;
-const int analogTempPin = 5;*/
 
 
 //// Functions /////////////////////////////////////////////////////////////////////
 void initialize_pins(){
     #ifdef ENABLE_PIR
     pinMode(pirSensorPin, INPUT);
+    pinMode(pirSensorPwrPin, OUTPUT);
+    digitalWrite(pirSensorPwrPin, LOW);
+    digitalWrite(5, HIGH);
     #endif
     #ifdef ENABLE_LIGHT
     pinMode(lightSensorPin, INPUT);
+    pinMode(lightSensorPwrPin, OUTPUT);
+    digitalWrite(lightSensorPwrPin, LOW);
     #endif
 
     time_now = millis();
     time_previous = time_now;
 }
 
+float readBatteryVoltage(){
+  float sum = 0;
+  for(int i = 0; i < 10; i++){
+    sum += analogRead(35)/4096.0 * 7.445;
+  }
+  sum /= 10.0;
+  return sum;
+}
+
+void battery_format_mqtt_message(char* message, char* topic){
+    char value[64];                                 // Value used for string conversion
+
+    float bat = readBatteryVoltage();               // Get bat values
+
+    memset(message,0,512);                          // Clear buffers
+    memset(topic,0,64);
+    strcpy(topic, DEVICE_NAME);                     // Set topic to "ESP32/BMP280"
+    strcat(topic, "/BAT");
+
+    strcpy(message, "BAT=");                        // Set variable name in buffer
+    ftoa(bat, value, 4);                            // Convert float to string
+    strcat(message, value);                         // Add value string to buffer
+}
 
 // Reverses a string 'str' of length 'len'
 void reverse(char* str, int len)
